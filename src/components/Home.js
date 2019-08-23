@@ -98,8 +98,8 @@ export class Home extends React.Component {
                     <WrappedAroundMap
                         loadNearbyPosts={this.loadNearbyPosts}
                         posts={this.state.posts}
-                        googleMapURL= "https://maps.googleapis.com/maps/api/js?key=AIzaSyAg0V7DQsexMmyxxbpkMgurfuFyrOke_mI&libraries=geometry,drawing,places"
-                       // googleMapURL= "https://maps.googleapis.com/maps/api/js?key="`${MAP_KEY}`"&libraries=geometry,drawing,places"
+
+                        googleMapURL= "https://maps.googleapis.com/maps/api/js?key="`${MAP_KEY}`"&libraries=geometry,drawing,places"
                         loadingElement={<div style={{ height: `100%` }} />}
                         containerElement={<div style={{ height: `600px` }} />}
                         mapElement={<div style={{ height: `100%` }} />}
