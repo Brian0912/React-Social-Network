@@ -71,11 +71,13 @@ export class Home extends React.Component {
 
     loadNearbyPosts = () => {
         //const { lat, lon } = JSON.parse(localStorage.getItem(POS_KEY));
-        const lat = 37.7915953;
-        const lon = -122.3937977;
+        const lat = 33;
+        const lon = 33;
         this.setState({ loadingPosts: true, error: ''});
         $.ajax({
-            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}&range=20`,
+            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}`,
+          //  url: `${API_ROOT}/post/_search`,
+          //  method: 'POST',
             method: 'GET',
             headers: {
                 Authorization: `${AUTH_PREFIX} ${localStorage.getItem(TOKEN_KEY)}`
