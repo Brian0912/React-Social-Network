@@ -2,14 +2,9 @@ import React from 'react';
 import $ from 'jquery';
 import { Modal, Button, message } from 'antd';
 import { WrappedCreatePostForm } from './CreatePostForm';
-import { API_ROOT, TOKEN_KEY, AUTH_PREFIX, POS_KEY, LOC_SHAKE } from '../constants';
-import { PropTypes } from 'prop-types';
+import { API_ROOT, POS_KEY, AUTH_PREFIX, TOKEN_KEY } from '../constants';
 
 export class CreatePostButton extends React.Component {
-    static propTypes = {
-        loadNearbyPosts: PropTypes.func.isRequired,
-    }
-
     state = {
         visible: false,
         confirmLoading: false,
@@ -20,46 +15,38 @@ export class CreatePostButton extends React.Component {
         });
     }
     handleOk = () => {
-        const form = this.form;
-        form.validateFields((err, values) => {
-            if (err) { return; }
-            console.log('Received values of form: ', values);
+        this.setState({ confirmLoading: true });
+        this.form.validateFields((err, values) => {
+            if (!err) {
+                const { lat, lon } = JSON.parse(localStorage.getItem(POS_KEY));
+                const formData = new FormData();
+                formData.set('lat', lat);
+                formData.set('lon', lon);
+                formData.set('message', values.message);
+                formData.set('image', values.image[0].originFileObj);
 
-            // prepare formData
-            const { lat, lon } = JSON.parse(localStorage.getItem(POS_KEY));
-            const formData = new FormData();
-            formData.set('lat', lat + Math.random() * LOC_SHAKE * 2 - LOC_SHAKE);
-            formData.set('lon', lon + Math.random() * LOC_SHAKE * 2 - LOC_SHAKE);
-            formData.set('message', form.getFieldValue('message'));
-            formData.set('image', form.getFieldValue('image')[0]);
-
-            // show loading on create button
-            this.setState({ confirmLoading: true });
-            // send request
-            $.ajax({
-                method: 'POST',
-                url: `${API_ROOT}/post`,
-                headers: {
-                    Authorization: `${AUTH_PREFIX} ${localStorage.getItem(TOKEN_KEY)}`,
-                },
-                processData: false,
-                contentType: false,
-                dataType: 'text',
-                data: formData,
-            }).then(() => {
-                message.success('created a post successfully.');
-                form.resetFields();
-            },(error) => {
-                message.error(error.responseText);
-                form.resetFields();
-            }).then(() => {
-                this.props.loadNearbyPosts().then(() => {
+                $.ajax({
+                    url: `${API_ROOT}/post`,
+                    method: 'POST',
+                    data: formData,
+                    headers: {
+                        Authorization: `${AUTH_PREFIX} ${localStorage.getItem(TOKEN_KEY)}`,
+                    },
+                    processData: false,
+                    contentType: false,
+                    dataType: 'text',
+                }).then((response) => {
+                    message.success('Created a post successfully!');
+                    this.form.resetFields();
                     this.setState({ visible: false, confirmLoading: false });
+                    this.props.loadNearByPosts();
+                }, (response) => {
+                    message.error(response.responseText);
+                    this.setState({ visible: false, confirmLoading: false });
+                }).catch((error) => {
+                    console.log(error);
                 });
-            }).catch((e) => {
-                message.error('create post failed.');
-                console.error(e);
-            });
+            }
         });
     }
     handleCancel = () => {
@@ -82,7 +69,6 @@ export class CreatePostButton extends React.Component {
                        okText="Create"
                        confirmLoading={confirmLoading}
                        onCancel={this.handleCancel}
-                       cancelText="Cancel"
                 >
                     <WrappedCreatePostForm ref={this.saveFormRef}/>
                 </Modal>
@@ -90,4 +76,3 @@ export class CreatePostButton extends React.Component {
         );
     }
 }
-

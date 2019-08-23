@@ -67,6 +67,8 @@ export class Home extends React.Component {
 
     loadNearbyPosts = (location, radius) => {
         const { lat, lon } = location ? location : JSON.parse(localStorage.getItem(POS_KEY));
+        //const lat = 33;
+        //const lon = 33;
         const range = radius ? radius : 20;
         this.setState({ loadingPosts: true });
         return $.ajax({

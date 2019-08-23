@@ -15,9 +15,9 @@ class CreatePostForm extends React.Component {
         return false;
     }
 
-    getWrappedForm = () => {
-        return this.props.form;
-    }
+    // getWrappedForm = () => {
+    //     return this.props.form;
+    // }
 
     render() {
         const { getFieldDecorator } = this.props.form;
@@ -66,3 +66,4 @@ class CreatePostForm extends React.Component {
 }
 
 export const WrappedCreatePostForm = Form.create()(CreatePostForm);
+
